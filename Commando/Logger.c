@@ -29,7 +29,7 @@ static StopOrder stopOrder;
 pthread_t threadId;
 
 // PROTOTYPES
-static void appendEvent(SensorState sensors, int spd);
+static void Logger_appendEvent(SensorState sensors, int spd);
 
 extern void Logger_start(void)
 {
@@ -54,10 +54,10 @@ extern void Logger_stop(void)
 	pthread_join(threadId, NULL);
 
 	//et on vide la liste
-	clear();
+	Logger_clear();
 }
 
-extern Event* askEvents(int from, int to)
+extern Event* Logger_askEvents(int from, int to)
 {
 	int size = to - from;
 	Event listEvents[size];
@@ -82,18 +82,18 @@ extern Event* askEvents(int from, int to)
 
 }
 
-extern int askEventCount(void)
+extern int Logger_askEventCount(void)
 {
 	return (listStatus==FULL)?LIMIT_EVENT:index;
 }
 
-extern void clear(void)
+extern void Logger_clear(void)
 {
 	listStatus = EMPTY;
 	index = 0;
 }
 
-static void appendEvent(SensorState sensors, int spd)
+static void Logger_appendEvent(SensorState sensors, int spd)
 {
 	if(index == LIMIT_EVENT-1){
 		listStatus = FULL;
@@ -116,7 +116,7 @@ static void *threadproc(void *arg)
 
 		sleep(1);
 		usleep(250000); //250 ms
-	    appendEvent(Robot_getSensorState(),  Robot_getRobotSpeed());
+		Logger_appendEvent(Robot_getSensorState(),  Robot_getRobotSpeed());
 
 	}
     return 0;
