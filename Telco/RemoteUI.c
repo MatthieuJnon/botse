@@ -136,9 +136,21 @@ extern void RemoteUI_stop(void)
 
 }
 
+extern void RemoteUI_backToMainScreen(void){
+	MqMsg msg =  {.event = E_RETURN};
+	TRACE("[RemoteUI] retour a l'ecran principale\n");
+	RemoteUI_mqSend (msg);
+}
+
 extern void RemoteUI_ask4log(void){
-	MqMsg msg =  {.event = E_SET_IP};
+	MqMsg msg =  {.event = E_ASK_LOG};
 	TRACE("[RemoteUI] demande  de Log\n");
+	RemoteUI_mqSend (msg);
+}
+
+extern void RemoteUI_clear(void){
+	MqMsg msg =  {.event = E_CLEAR};
+	TRACE("[RemoteUI] clear logs\n");
 	RemoteUI_mqSend (msg);
 }
 
@@ -162,7 +174,7 @@ extern void RemoteUI_setDir(Direction dir)
 
 extern void RemoteUI_validate(void)
 {
-
+	//????
 }
 
 extern void RemoteUI_toggleEmergencyStop(void)
