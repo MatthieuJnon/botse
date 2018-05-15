@@ -33,7 +33,7 @@ static void displayEvents(Event events[]);
  * @brief The user asked to start
  * connection to socket.
  */
-extern void start()
+extern void adminui_start()
 {
 	int answer = 0;
 
@@ -62,7 +62,7 @@ extern void start()
  * @brief The user asked to stop
  * break connection to socket.
  */
-extern void stop()
+extern void adminui_stop()
 {
 	close(testSocket);
 

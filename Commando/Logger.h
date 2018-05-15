@@ -14,8 +14,8 @@ typedef struct
     float speed;
 } Event;
 
-extern void start(void);
-extern void stop(void);
+extern void Logger_start(void);
+extern void Logger_stop(void);
 extern Event* askEvents(int from, int to);
 extern int askEventCount(void);
 extern void clear(void);

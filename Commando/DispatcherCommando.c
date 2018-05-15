@@ -3,12 +3,12 @@
 
 #include "DispatcherCommando.h"
 
-extern void start()
+extern void DC_start()
 {
 
 }
 
-extern void stop()
+extern void DC_stop()
 {
 
 }
