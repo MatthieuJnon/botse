@@ -44,7 +44,10 @@ export LDFLAGS += -L$(INTOXDIR)/lib/ -linfox
 #
 # Définitions du binaire à générer.
 #
-export PROG = $(BINDIR)/robot_pc
+#export PROG = $(BINDIR)/robot_pc
+export PROG = $(BINDIR)/commando
+export PROG_CLIENT = $(BINDIR)/telco
+
 
 #
 # Règles du Makefile.
@@ -60,4 +63,6 @@ all:
 clean:
 	@for i in $(SUBDIRS); do (cd $$i; make $@); done
 	@rm -f $(PROG) core* $(BINDIR)/core*
+    @rm -f $(PROG_CLIENT)) core* $(BINDIR)/core*
+
 
