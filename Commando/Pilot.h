@@ -21,7 +21,7 @@ typedef struct Pilot_t Pilot;
 extern void Pilot_start(void);
 extern void Pilot_stop(void);
 extern MqMsg Pilot_mqReceive(void);
-extern Pilot_setRobotVelocity(VelocityVector vel);
+extern int Pilot_setRobotVelocity(VelocityVector vel);
 extern void Pilot_toggleEmergencyStop(void);
 extern void Pilot_check(void);
 extern void Pilot_new(void);

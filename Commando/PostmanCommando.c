@@ -11,12 +11,13 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
+#include "Pilot.h"
+#include "Logger.h"
 #include "PostmanCommando.h"
-#include "ProxyRemoteUI.h"
 
 int sock;
 
-int PostmanCommando_new(){
+extern int PostmanCommando_new(){
     struct sockaddr_in server;
     pthread_t threadListen;
      
@@ -47,19 +48,40 @@ int PostmanCommando_new(){
 	}
 
 	return 0;
-
 }
 
-extern void sendMsg(){
-	char message[1000];
-	printf("Enter message : ");
-    scanf("%s" , message);
-     
-    //Send some data
-    if( send(sock , message , strlen(message) , 0) < 0)
+extern void sendMsg(SocketDataSend socketData){
+    if( send(sock , &socketData , strlen(socketData) , 0) < 0)
     {
         printf("Send failed");
     }
+}
+
+extern void sendMsgSetPilotState(PilotState pilotState){
+    DataSend data = { 0 };
+    data.pilotState = pilotState;
+
+    SocketDataSend socketData = { 0 };
+    strcpy(socketData.dataType, "setPilotState");
+    socketData.data = data;
+}
+
+extern void sendMsgSetEvents(Event event){
+    DataSend data = { 0 };
+    data.events = events;
+
+    SocketDataSend socketData = { 0 };
+    strcpy(socketData.dataType, "SetEvents");
+    socketData.data = data;
+}
+
+extern void sendMsgSetEventCount(Indice indice){
+    DataSend data = { 0 };
+    data.indice = indice;
+
+    SocketDataSend socketData = { 0 };
+    strcpy(socketData.dataType, "SetEventCount");
+    socketData.data = data;
 }
 
 extern void *receiveMsg(void *params){
@@ -82,6 +104,6 @@ extern void *receiveMsg(void *params){
 	}
 }
 
-void PostmanCommando_free(){
+extern void PostmanCommando_free(){
     close(sock);
 }

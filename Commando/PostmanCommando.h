@@ -3,15 +3,26 @@
 
 #define PORT 12345
 
-typedef struct{
-	PilotState PilotState;
-	Event[] events;
+typedef struct {
 	Indice indice;
-} SocketData;
+	PiloteState PiloteState;
+	Event events;
+} DataSend;
 
-int PostmanCommando_new(void);
+typedef struct{
+	char[200] dataType;
+	Data data;
+} SocketDataSend;
+
+
+extern int PostmanCommando_new(void);
+
 extern void sendMsg();
+extern void sendMsgSetPilotState(PilotState pilotState);
+extern void sendMsgSetEvents(Event event);
+extern void sendMsgSetEventCount(Indice indice);
+
 extern void *receiveMsg(void *params);
-void PostmanCommando_free(void);
+extern void PostmanCommando_free(void);
 
 #endif
