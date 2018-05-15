@@ -29,7 +29,7 @@ typedef enum {
 	SCREEN_FORGET,
     SCREEN_MAIN,
     SCREEN_LOG,
-	SCRREN_DEATH,
+	SCREEN_DEATH,
 	NB_SCREEN
 } IdAdminScreen;
 
