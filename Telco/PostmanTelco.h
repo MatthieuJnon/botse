@@ -4,8 +4,9 @@
 #define MAX_PENDING_CONNECTIONS (2)
 #define SERVER_PORT (12345)
 
-int start_server();
+int PostmanTelco_new();
 extern void sendMsg(int socket, char *msg);
 extern void *receiveMsg(void *param);
+void PostmanTelco_free();
 
 #endif

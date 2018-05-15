@@ -1,6 +1,14 @@
-#include <stdlib.h>
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <pthread.h>
 
 #include "PostmanTelco.h"
 
@@ -8,7 +16,7 @@ int *cli_sockfd;
 int client_id;
 int clientToFill;
 
-int start_server(){
+int PostmanTelco_new(){
 	int sockfd;
 	struct sockaddr_in addr;
 
@@ -19,7 +27,7 @@ int start_server(){
 	}
 	// set the port reusable when closed
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0)
-	    error("setsockopt(SO_REUSEADDR) failed");
+	    printf("setsockopt(SO_REUSEADDR) failed");
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(SERVER_PORT);
@@ -35,12 +43,7 @@ int start_server(){
 		return 1;
 	}
 
-	pthread_t threadListen, threadGps;
-
-	// thread sending gps coords
-	if(pthread_create(&threadGps, NULL, send_gps, NULL)){
-		printf("An error occured when startint send_gps thread\n");
-	}
+	pthread_t threadListen;
 
 	// list of clients socket
 	int newClient;
@@ -73,7 +76,7 @@ int start_server(){
 			cli_sockfd[client_id] = newClient;
 
 			if (cli_sockfd[client_id] < 0)
-			    error("ERROR accepting a connection from a client.");
+			    printf("ERROR accepting a connection from a client.");
 
 			printf("New client : id is %d\n", client_id);
 
@@ -105,7 +108,7 @@ extern void sendMsg(int socket, char *msg){
 
 extern void *receiveMsg(void *param){
 	int *socket = (int *)param;
-	char msg[255];
+	char msg[2000];
 	for(;;){
 		// reinitialize msg
 		memset(msg, 0, 255);
@@ -118,17 +121,10 @@ extern void *receiveMsg(void *param){
 			pthread_exit(NULL);
 		}else if(strchr(msg, '\n') != NULL){
 			printf("Client sent : %s\n", msg);
-
-			// receiving json and handle action
-			struct json_type *my_type = malloc(sizeof(struct json_type));
-			int status = get_json_type(msg, my_type);
-			if (status == 0) {
-			    do_action_for(my_type->type, msg, *socket);
-			} else {
-				printf("error on json : %s\n", msg);
-        		puts(json_error_string(status));
-			}
-			//end json
 		}
 	}
+}
+
+void PostmanTelco_free(){
+
 }

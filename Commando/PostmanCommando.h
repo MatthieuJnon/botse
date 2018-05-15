@@ -1,7 +1,11 @@
 #ifndef POSTMAN_COMMANDO_H
-#define
+#define POSTMAN_COMMANDO_H
 
-extern sendMsg(void);
-extern receiveMsg(void);
+#define PORT 12345
+
+int PostmanCommando_new(void);
+extern void sendMsg();
+extern void *receiveMsg(void *params);
+void PostmanCommando_free(void);
 
 #endif
