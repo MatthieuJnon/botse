@@ -6,13 +6,6 @@
 extern void start(void);
 extern void stop(void);
 extern void toggleEmergencyStop(void);
-/*
- * AdminUI.h
- *
- *  Created on: 14 mai 2018
- *  Author: Pierre P
- */
-
 extern void AdminUI_ask4Log(void);
 extern void AdminUI_backMainScreen(void);
 extern void AdminUI_clearLog(void);
