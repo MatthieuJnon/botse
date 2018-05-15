@@ -31,7 +31,7 @@ pthread_t threadId;
 // PROTOTYPES
 static void appendEvent(SensorState sensors, int spd);
 
-extern void start(void)
+extern void Logger_start(void)
 {
 	index = 0;
 	listStatus = EMPTY;
@@ -46,7 +46,7 @@ extern void start(void)
 
 }
 
-extern void stop(void)
+extern void Logger_stop(void)
 {
 	//On ordonne l'arret
 	stopOrder = STOP;

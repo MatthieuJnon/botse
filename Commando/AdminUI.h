@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
-extern void start(void);
-extern void stop(void);
+extern void adminui_start(void);
+extern void adminui_stop(void);
 extern void toggleEmergencyStop(void);
 /*
  * AdminUI.h

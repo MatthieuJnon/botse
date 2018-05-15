@@ -1,7 +1,7 @@
 #
-# Hello Robot C - Makefile du package robot des sources.
+# Commando C - Makefile du package robot des sources.
 #
-# @author Matthias Brun
+# @author Alessandro Moscaz
 #
 
 #
@@ -32,4 +32,3 @@ clean:
 	@rm -f $(OBJ) $(DEP)
 
 -include $(DEP)
-
