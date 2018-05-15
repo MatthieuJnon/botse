@@ -106,7 +106,6 @@ static uint8_t myIp;
 static Direction myDir;
 static VelocityVector myVel;
 static PilotState myPilotState;
-static IdScreen myCurrentScreen;
 static int currentEventNumber;
 static int previousEventNumber;
 
@@ -128,7 +127,7 @@ extern void RemoteUI_stop(void)
 {
 
 	MqMsg msg = {.event = E_STOP};
-	TRACE("[Lampe] demande d'arret de la lampe  \n");
+	TRACE("[RemoteUI] demande d'arret de RemoteUI \n");
 	Lampe_mqSend (msg);
 
 	pthread_join(MyThread, NULL);
@@ -137,14 +136,28 @@ extern void RemoteUI_stop(void)
 
 }
 
+extern void RemoteUI_ask4log(void){
+	MqMsg msg =  {.event = E_SET_IP};
+	TRACE("[RemoteUI] demande  de Log\n");
+	RemoteUI_mqSend (msg);
+}
+
 extern void RemoteUI_setIP(uint8_t ip)
 {
 	myIp = ip;
+	MqMsg msg =  {.event = E_SET_IP};
+	TRACE("[RemoteUI] demande de changement de l'IP\n");
+	RemoteUI_mqSend (msg);
 }
 
 extern void RemoteUI_setDir(Direction dir)
 {
 	myDir = dir;
+	myVel.power = (myDir==FORWARD)? 20 : -20;
+	myVel.dir = myDir;
+	MqMsg msg =  {.event = E_SET_DIR};
+	TRACE("[RemoteUI] demande de changement du dir\n");
+	RemoteUI_mqSend (msg);
 }
 
 extern void RemoteUI_validate(void)
@@ -178,10 +191,13 @@ static RemoteUI_displayScreen(IdScreen idScreen)
 {
 	switch(idScreen){
 		case SCREEN_MAIN:
-			printf "-----------------------Screen Main--------------------------------";
+			printf("\n-----------------------Screen Main--------------------------------\n");
 			break;
 		case SCREEN_LOG:
-			printf "-----------------------Screen lOG  --------------------------------";
+			printf("\n-----------------------Screen lOG  --------------------------------\n");
+			break;
+		case SCREEN_DEATH:
+			printf("\n--------------------- Shutting Down  ------------------------------\n");
 			break;
 		default:
 			break;
@@ -264,36 +280,39 @@ static void RemoteUI_performAction (Action anAction)
 	switch (anAction)
 	{
     case A_SET_DIR:
-        RemoteUI_setDir();
+//        RemoteUI_setDir();
+    	RemoteUI_displayScreen(SCREEN_MAIN);
         break;
 
     case A_SET_IP:
-    	RemoteUI_setIP ();
+//    	Postman_setIP (myIp); ??
+    	RemoteUI_displayScreen(SCREEN_MAIN);
         break;
 
     case A_DISPLAY_LOG:
-    	displayScreen(SCREEN_LOG);
-    	RemoteUI_displayEvents(myEvents);
+    	RemoteUI_displayScreen(SCREEN_LOG);
+//    	RemoteUI_displayEvents(myEvents); ??
         break;
 
     case A_RETURN:
-    	displayScreen(SCREEN_MAIN);
+    	RemoteUI_displayScreen(SCREEN_MAIN);
     	break;
 
     case A_CLEAR:
 //    	RemoteUI_clear ();
-    	displayScreen(SCREEN_LOG);
+    	RemoteUI_displayScreen(SCREEN_LOG);
         break;
 
     case A_STOP:
-    	RemoteUI_stop();
-        break;
+    	RemoteUI_displayScreen(SCREEN_DEATH);
+    	break;
 
     case A_REFRESH:
     	currentEventNumber=ProxyLogger_askEventsCount();
     	myEvents=getEvents(previousEventNumber, currentEventNumber);
     	previousEventNumber = currentEventNumber;
-    	displayEvents(myEvents);
+//    	RemoteUI_displayEvents(myEvents); ??
+    	RemoteUI_displayScreen(SCREEN_LOG);
     	break;
 
     default:
