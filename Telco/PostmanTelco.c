@@ -41,62 +41,56 @@ extern int PostmanTelco_new(){
 	return 0;
 }
 
-extern void sendMsg(SocketData socketData){
+extern void sendMsg(SocketDataSend socketData){
 	write(sock, &socketData, sizeof(socketData));
 }
 
 extern void sendMsgAskEvent(Indice from, Indice to){
-	Data data = { 0 };
+	DataSend data;
 	data.fromIndice = from;
 	data.toIndice = to;
 
-	SocketData socketData = { 0 };
-	strcpy(socketData.dataType, "AskEvent");
+	SocketDataSend socketData;
+	socketData.dataType = ASK_EVENT;
 	socketData.data = data;
 
 	sendMsg(socketData);
 }
 
 extern void sendMsgAskEventCount(){
-	Data data = { 0 };
-
-	SocketData socketData = { 0 };
-	strcpy(socketData.dataType, "AskEventCount");
+	SocketDataSend socketData;
+	socketData.dataType = ASK_EVENT_COUNT;
 
 	sendMsg(socketData);
 }
 
-extern void sendMsgSetRobotVelocity(Velocity vel){
-	Data data = { 0 };
+extern void sendMsgSetRobotVelocity(VelocityVector vel){
+	DataSend data;
 	data.velocityVector = vel;
 
-	SocketData socketData = { 0 };
-	strcpy(socketData.dataType, "SetRobotVelocity");
+	SocketDataSend socketData;
+	socketData.dataType = SET_ROBOT_VELOCITY;
 	socketData.data = data;
 
 	sendMsg(socketData);
 }
 
 extern void sendMsgAskPilotState(){
-	Data data = { 0 };
-
-	SocketData socketData = { 0 };
-	strcpy(socketData.dataType, "AskPilotState");
+	SocketDataSend socketData;
+	socketData.dataType = ASK_PILOT_STATE;
 
 	sendMsg(socketData);
 }
 
 extern void sendMsgToggleEmergencyStop(){
-	Data data = { 0 };
-
-	SocketData socketData = { 0 };
-	strcpy(socketData.dataType, "ToggleEmergencyStop");
+	SocketDataSend socketData;
+	socketData.dataType = TOGGLE_EMERGENCY_STOP;
 
 	sendMsg(socketData);
 }
 
 extern void *receiveMsg(void *param){
-    SocketData socketData;
+    SocketDataReceive socketData;
 	for(;;){
 		if( read(sock, &socketData, sizeof(socketData)) < 0)
 	    {

@@ -4,23 +4,46 @@
 #define MAX_PENDING_CONNECTIONS (2)
 #define PORT (12345)
 
+typedef enum {
+	ASK_EVENT,
+	ASK_EVENT_COUNT,
+	ASK_PILOT_STATE,
+	SET_ROBOT_VELOCITY,
+	TOGGLE_EMERGENCY_STOP
+} DataTypeSend;
+
 typedef struct {
 	Indice fromIndice;
 	Indice toIndice;
 	VelocityVector velocityVector;
-} Data;
+} DataSend;
 
 typedef struct{
-	char[200] dataType;
-	Data data;
-} SocketData;
+	DataTypeSend dataType;
+	DataSend data;
+} SocketDataSend;
+
+typedef enum {
+	TEST
+} DataTypeReceive;
+
+typedef struct {
+	Indice fromIndice;
+	Indice toIndice;
+	VelocityVector velocityVector;
+} DataReceive;
+
+typedef struct{
+	DataTypeReceive dataType;
+	DataReceive data;
+} SocketDataReceive;
 
 extern int PostmanTelco_new();
 
-extern void sendMsg(SocketData socketData);
+extern void sendMsg(SocketDataSend socketData);
 extern void sendMsgAskEvent(Indice from, Indice to);
 extern void sendMsgAskEventCount();
-extern void sendMsgSetRobotVelocity(Velocity vel);
+extern void sendMsgSetRobotVelocity(VelocityVector vel);
 extern void sendMsgAskPilotState();
 extern void sendMsgToggleEmergencyStop();
 
