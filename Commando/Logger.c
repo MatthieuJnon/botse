@@ -39,8 +39,10 @@ extern void start(void)
 
 	int returnCode;
 
-	pthread_create(&threadId, NULL, &threadproc, NULL);
 
+	if(pthread_create(&threadId, NULL, &threadproc, NULL) == -1) {
+		//TODO : Gestion erreur
+	}
 
 }
 
@@ -113,6 +115,7 @@ static void *threadproc(void *arg)
 	while (stopOrder == KEEP_GOING) { // tant qu'on a pas l'ordre de s'arreter
 
 		sleep(1);
+		usleep(250000); //250 ms
 	    appendEvent(Robot_getSensorState(),  Robot_getRobotSpeed());
 
 	}

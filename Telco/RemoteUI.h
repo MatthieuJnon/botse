@@ -1,15 +1,23 @@
 #ifndef REMOTE_UI_H
 #define REMOTE_UI_H
 
-extern void start(void);
-extern void stop(void);
-extern void setIP(Ip ip);
-extern void setDir(Direction dir);
-extern void validate(void);
-extern void toggleEmergencyStop(void);
-extern void setPiloteState (PilotState state);
-extern void setEvents (Event events[]);
-extern void setEventCount(Indice indice);
+typedef enum {
+	SCREEN_FORGET,
+    SCREEN_MAIN,
+    SCREEN_LOG,
+	SCRREN_DEATH,
+	NB_SCREEN
+} IdScreen;
+
+extern void RemoteUI_start(void);
+extern void RemoteUI_stop(void);
+extern void RemoteUI_setIP(int ip);
+extern void RemoteUI_setDir(Direction dir);
+extern void RemoteUI_validate(void);
+extern void RemoteUI_toggleEmergencyStop(void);
+extern void RemoteUI_setPiloteState (PilotState state);
+extern void RemoteUI_setEvents (Event events[]);
+extern void RemoteUI_setEventCount(int indice);
 
 #endif
 
