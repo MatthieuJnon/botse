@@ -97,13 +97,13 @@ int PostmanTelco_new(){
 	return 0;
 }
 
-extern void sendMsg(int socket, char *msg){
-	if(msg != NULL && strlen(msg) > 0 && socket != 0){	// only to connected clients
-		if(strchr(msg, '\n') == NULL){
-			strcat(msg, "\n");
-		}
-		write(socket, msg, strlen(msg));
-	}
+extern void sendMsg(int socket, PilotState pilotState, Event[] events, Indice indice){
+	SocketData socketData;
+	socketData.pilotState = pilotState;
+	SocketData.events = events;
+	SocketData.indice = indice;
+
+	write(socket, socketData, sizeof(socketData));
 }
 
 extern void *receiveMsg(void *param){

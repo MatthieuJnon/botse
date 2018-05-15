@@ -12,6 +12,7 @@
 #include <pthread.h>
 
 #include "PostmanCommando.h"
+#include "ProxyRemoteUI.h"
 
 int sock;
 
@@ -62,13 +63,21 @@ extern void sendMsg(){
 }
 
 extern void *receiveMsg(void *params){
-	char server_reply[2000];
+    SocketData socketData;
 	for(;;){
-		if( recv(sock , server_reply , 2000 , 0) < 0)
+		if( read(sock, &socketData, sizeof(socketData)) < 0)
 	    {
 	        puts("recv failed");
 	    }else{
-	    	printf("server sent: %s\n", server_reply);
+            if(socketData.pilotState != NULL){
+                setPilotState(pilotState);
+            }
+            if(socketData.events != NULL){
+                setEvents(events);
+            }
+            if(socketData.indice != NULL){
+                setEventCount(indice);
+            }
 	    }
 	}
 }

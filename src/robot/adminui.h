@@ -37,7 +37,6 @@
 #ifndef ADMINUI_H
 #define ADMINUI_H
 
-
 /**
  * Start AdminUI and waits for the user's input until the user ask to quit
  *
