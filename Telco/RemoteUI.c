@@ -121,6 +121,7 @@ extern void RemoteUI_start(void)
 {
 	previousEventNumber = 0;
 	RemoteUI_new ();
+	KeyBoard_Start();
 }
 
 extern void RemoteUI_stop(void)
@@ -133,6 +134,7 @@ extern void RemoteUI_stop(void)
 	pthread_join(MyThread, NULL);
 
 	RemoteUI_free();
+	KeyBoard_Stop();
 
 }
 
