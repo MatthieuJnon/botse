@@ -10,121 +10,111 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
+#include "ProxyPilot.h"
+#include "ProxyLogger.h"
 #include "PostmanTelco.h"
 
-int *cli_sockfd;
-int client_id;
-int clientToFill;
+int sock;
 
-int PostmanTelco_new(){
-	int sockfd;
-	struct sockaddr_in addr;
+extern int PostmanTelco_new(){
+	int socket_ecoute;
+	struct sockaddr_in mon_adresse;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if(sockfd < 0){
-		printf("ERROR opening socket\n");
-		return 1;
-	}
-	// set the port reusable when closed
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0)
-	    printf("setsockopt(SO_REUSEADDR) failed");
+	socket_ecoute = socket(AF_INET, SOCK_STREAM, 0);
+	mon_adresse.sin_family = AF_INET;
+	mon_adresse.sin_port = htons (PORT);
+	mon_adresse.sin_addr.s_addr = htonl (INADDR_ANY);
 
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(SERVER_PORT);
-	addr.sin_addr.s_addr = htonl (INADDR_ANY);
+	bind(socket_ecoute, (struct sockaddr *)&mon_adresse, sizeof (mon_adresse));
 
-	if(bind(sockfd, (struct sockaddr *)&addr, sizeof (addr)) < 0){
-		printf("CANNOT BIND\n");
-		return 1;
-	}
-
-	if(listen(sockfd, MAX_PENDING_CONNECTIONS) < 0){
-		printf("CANNOT LISTEN\n");
-		return 1;
-	}
-
+	listen(socket_ecoute, MAX_PENDING_CONNECTIONS);
+	
 	pthread_t threadListen;
-
-	// list of clients socket
-	int newClient;
-	client_id = 0;
-	cli_sockfd = (int*)malloc(MAX_PENDING_CONNECTIONS*sizeof(int)); /* nb clients sockets */
-	memset(cli_sockfd, 0, MAX_PENDING_CONNECTIONS*sizeof(int));
-
 	while(1){
-		socklen_t clilen;
-		struct sockaddr_in cli_addr;
-
-		printf("-> Listening for clients...\n");
-
-		/* Zero out memory for the client information. */
-		memset(&cli_addr, 0, sizeof(cli_addr));
-
-		clilen = sizeof(cli_addr);
-
-		/* Accept the connection from the client (temporarily) */
-		newClient = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-		while(cli_sockfd[client_id] != 0){
-			client_id++;
-			if(client_id >= MAX_PENDING_CONNECTIONS){
-				client_id = 0;
-				break;
-			}
-		}
-
-		if(cli_sockfd[client_id] == 0){	// we recheck if the selected client is free
-			cli_sockfd[client_id] = newClient;
-
-			if (cli_sockfd[client_id] < 0)
-			    printf("ERROR accepting a connection from a client.");
-
-			printf("New client : id is %d\n", client_id);
-
-			/* Send the client it's ID. */
-			// char helloMsg[] = "Hello, you are client %d";
-			// sprintf(helloMsg, helloMsg, client_id);
-			// sendMsg(cli_sockfd[client_id], helloMsg);
-
-			// thread reading socket
-			if(pthread_create(&threadListen, NULL, receiveMsg, &cli_sockfd[client_id])){
-				printf("An error occured when startint receiveMsg thread\n");
-			}
-		}else{
-			printf("Client %d is already taken\n", client_id);
-			close(newClient);
+		sock = accept(socket_ecoute, NULL, 0);
+		printf("New client !");
+		// thread reading socket
+		if(pthread_create(&threadListen, NULL, receiveMsg, NULL)){
+			printf("An error occured when startint receiveMsg thread\n");
 		}
 	}
 	return 0;
 }
 
-extern void sendMsg(int socket, PilotState pilotState, Event[] events, Indice indice){
-	SocketData socketData;
-	socketData.pilotState = pilotState;
-	SocketData.events = events;
-	SocketData.indice = indice;
+extern void sendMsg(SocketData socketData){
+	write(sock, &socketData, sizeof(socketData));
+}
 
-	write(socket, socketData, sizeof(socketData));
+extern void sendMsgAskEvent(Indice from, Indice to){
+	Data data = { 0 };
+	data.fromIndice = from;
+	data.toIndice = to;
+
+	SocketData socketData = { 0 };
+	strcpy(socketData.dataType, "AskEvent");
+	socketData.data = data;
+
+	sendMsg(socketData);
+}
+
+extern void sendMsgAskEventCount(){
+	Data data = { 0 };
+
+	SocketData socketData = { 0 };
+	strcpy(socketData.dataType, "AskEventCount");
+
+	sendMsg(socketData);
+}
+
+extern void sendMsgSetRobotVelocity(Velocity vel){
+	Data data = { 0 };
+	data.velocityVector = vel;
+
+	SocketData socketData = { 0 };
+	strcpy(socketData.dataType, "SetRobotVelocity");
+	socketData.data = data;
+
+	sendMsg(socketData);
+}
+
+extern void sendMsgAskPilotState(){
+	Data data = { 0 };
+
+	SocketData socketData = { 0 };
+	strcpy(socketData.dataType, "AskPilotState");
+
+	sendMsg(socketData);
+}
+
+extern void sendMsgToggleEmergencyStop(){
+	Data data = { 0 };
+
+	SocketData socketData = { 0 };
+	strcpy(socketData.dataType, "ToggleEmergencyStop");
+
+	sendMsg(socketData);
 }
 
 extern void *receiveMsg(void *param){
-	int *socket = (int *)param;
-	char msg[2000];
+    SocketData socketData;
 	for(;;){
-		// reinitialize msg
-		memset(msg, 0, 255);
-		int n = read(*socket, msg, 255);
-
-		if (n <= 0){
-			printf("Client disconnected\n----------------------------\n");
-			close(*socket);
-			*socket = 0;
-			pthread_exit(NULL);
-		}else if(strchr(msg, '\n') != NULL){
-			printf("Client sent : %s\n", msg);
-		}
+		if( read(sock, &socketData, sizeof(socketData)) < 0)
+	    {
+	        puts("recv failed");
+	    }else{
+            // if(socketData.pilotState != NULL){
+            //     setPilotState(pilotState);
+            // }
+            // if(socketData.events != NULL){
+            //     setEvents(events);
+            // }
+            // if(socketData.indice != NULL){
+            //     setEventCount(indice);
+            // }
+	    }
 	}
 }
 
-void PostmanTelco_free(){
-
+extern void PostmanTelco_free(){
+	close(sock);
 }

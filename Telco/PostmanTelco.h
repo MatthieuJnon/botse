@@ -2,17 +2,29 @@
 #define POSTMAN_TELCO_H
 
 #define MAX_PENDING_CONNECTIONS (2)
-#define SERVER_PORT (12345)
+#define PORT (12345)
+
+typedef struct {
+	Indice fromIndice;
+	Indice toIndice;
+	VelocityVector velocityVector;
+} Data;
 
 typedef struct{
-	PilotState PilotState;
-	Event[] events;
-	Indice indice;
+	char[200] dataType;
+	Data data;
 } SocketData;
 
-int PostmanTelco_new();
-extern void sendMsg(int socket, char *msg);
+extern int PostmanTelco_new();
+
+extern void sendMsg(SocketData socketData);
+extern void sendMsgAskEvent(Indice from, Indice to);
+extern void sendMsgAskEventCount();
+extern void sendMsgSetRobotVelocity(Velocity vel);
+extern void sendMsgAskPilotState();
+extern void sendMsgToggleEmergencyStop();
+
 extern void *receiveMsg(void *param);
-void PostmanTelco_free();
+extern void PostmanTelco_free();
 
 #endif
