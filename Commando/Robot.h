@@ -1,5 +1,5 @@
 #ifndef ROBOT_H
-#define
+#define ROBOT_H
 
 extern void setWheelsVelocity(WheelVelocity vr, WheelVelocity vl);
 extern Speed getRobotSpeed(void);

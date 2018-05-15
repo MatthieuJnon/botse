@@ -1,5 +1,5 @@
 #ifndef REMOTE_UI_H
-#define
+#define REMOTE_UI_H
 
 extern void start(void);
 extern void stop(void);

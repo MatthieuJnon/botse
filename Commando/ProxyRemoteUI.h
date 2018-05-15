@@ -1,5 +1,5 @@
 #ifndef PROXY_REMOTE_UI_H
-#define
+#define PROXY_REMOTE_UI_H
 
 extern void setPilotState(PilotState state);
 extern void setEvents(Event events[]);

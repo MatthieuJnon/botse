@@ -1,5 +1,5 @@
 #ifndef DISPATCHER_COMMANDO_H
-#define
+#define DISPATCHER_COMMANDO_H
 
 extern void start();
 extern void stop();

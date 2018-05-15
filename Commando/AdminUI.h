@@ -1,5 +1,5 @@
 #ifndef ADMIN_UI_H
-#define
+#define ADMIN_UI_H
 #include <stdint.h>
 #include <sys/socket.h>
 

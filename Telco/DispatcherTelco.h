@@ -1,5 +1,5 @@
 #ifndef DISPATCHER_TELCO_H
-#define
+#define DISPATCHER_TELCO_H
 
 extern void start();
 extern void stop();
