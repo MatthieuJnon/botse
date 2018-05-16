@@ -28,7 +28,7 @@ extern int PostmanTelco_new(){
 	bind(socket_ecoute, (struct sockaddr *)&mon_adresse, sizeof (mon_adresse));
 
 	listen(socket_ecoute, MAX_PENDING_CONNECTIONS);
-	
+
 	pthread_t threadListen;
 	while(1){
 		sock = accept(socket_ecoute, NULL, 0);
@@ -96,15 +96,15 @@ extern void *receiveMsg(void *param){
 	    {
 	        puts("recv failed");
 	    }else{
-            // if(socketData.pilotState != NULL){
-            //     setPilotState(pilotState);
-            // }
-            // if(socketData.events != NULL){
-            //     setEvents(events);
-            // }
-            // if(socketData.indice != NULL){
-            //     setEventCount(indice);
-            // }
+            if(socketData.pilotState != NULL){
+                setPilotState(pilotState);
+            }
+            if(socketData.events != NULL){
+                setEvents(events);
+            }
+          	if(socketData.indice != NULL){
+                setEventCount(indice);
+            }
 	    }
 	}
 }

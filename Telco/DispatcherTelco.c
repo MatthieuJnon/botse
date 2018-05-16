@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern void start()
+#include "DispatcherTelco.h"
+
+extern void DT_start()
 {
 
 }
 
-extern void stop()
+extern void DT_stop()
 {
 
 }

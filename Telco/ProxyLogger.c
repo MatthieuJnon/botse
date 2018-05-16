@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern void askEvents(Indice from, Indice to)
+#include "ProxyLogger.h"
+
+static int from;
+static int to;
+
+extern void askEvents(from, to)
 {
 	sendMsgAskEvent(from, to);
 }

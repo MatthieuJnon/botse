@@ -9,70 +9,21 @@
 #include <sys/stat.h>        /* For mode constants */
 #include <signal.h>
 #include <errno.h>
+#include <stdint.h>
+
+#include "tools.h"
+#include "ProxyPilot.h"
+#include "ProxyLogger.h"
 #include "RemoteUI.h"
+#include "Keyboard.h"
+
 
 // PARAM MAE
 #define NAME_MQ_BOX  "/bal_RemoteUI" //ne pas oublier le / devant le nom !
 #define MQ_MSG_COUNT 10 // min et max variable pour Linux (suivant version noyau, cf doc)
 #define MQ_MSG_SIZE 256 // 128 est le minimum absolu pour Linux, 1024 une valeur souvent utilisée !
 
-// On commence toujours par l'état S_FORGET, suivi de l'état initial de la MAE
-#define STATE_GENERATION S(S_FORGET) S(S_MAIN_SCREEN) S(S_LOG_CREEN) S(S_DEATH)
-#define S(x) x,
-typedef enum {STATE_GENERATION STATE_NB} State;
-#undef S
-#define S(x) #x,
-const char * const State_Name[] = { STATE_GENERATION };
-#undef STATE_GENERATION
-#undef S
-static const char * State_getName(int i)
-{
-    return State_Name[i];
-}
 
-//On commence toujours par A_NOP : pas d'action à faire
-#define ACTION_GENERATION S(A_NOP) S(A_SET_DIR) S(A_SET_IP) S(A_DISPLAY_LOG) S(A_RETURN) S(A_CLEAR) S(A_STOP) S(A_REFRESH)
-#define S(x) x,
-typedef enum {ACTION_GENERATION ACTION_NB}  Action;
-#undef S
-#define S(x) #x,
-const char * const Action_Name[] = { ACTION_GENERATION };
-#undef ACTION_GENERATION
-#undef S
-
-static const char * Action_getName(int i)
-{
-    return Action_Name[i];
-}
-
-
-#define EVENT_GENERATION S(E_SET_DIR) S(E_SET_IP) S(E_REFRESH) S(E_CLEAR) S(E_ASK_LOG) S(E_RETURN) S(E_STOP)
-#define S(x) x,
-typedef enum {EVENT_GENERATION EVENT_NB}  Event;
-#undef S
-#define S(x) #x,
-const char * const EventName[] = { EVENT_GENERATION };
-#undef EVENT_GENERATION
-#undef S
-
-static const char * Event_getName(int i)
-{
-    return EventName[i];
-}
-
-
-typedef struct
-{
-	State destinationState;
-	Action action;
-} Transition;
-
-typedef struct
-{
-	Event event;
-// définition générique pour permettre l'ajout d'attributs dans les messages si besoin
-// Ajout des attributs si nécessaire pour les actions
-} MqMsg;
 
 // Attributs de Lampe (singleton)
 static State MyState;
@@ -114,8 +65,8 @@ static int nbEvents;
 
 
 // PROTOTYPES
-static RemoteUI_displayScreen(IdScreen idScreen);
-static RemoteUI_displayEvents(Event event[]);
+static int RemoteUI_displayScreen(IdScreen idScreen);
+static int RemoteUI_displayEvents(Event event[]);
 
 extern void RemoteUI_start(void)
 {
