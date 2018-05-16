@@ -25,7 +25,6 @@ SUBDIRS = $(SRCDIR)
 #
 
 # Compilateur.
-
 export CC = gcc
 
 # options de compilation

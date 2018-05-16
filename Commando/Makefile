@@ -1,7 +1,7 @@
 #
 # Commando C - Makefile du package robot des sources.
 #
-# @author Alessandro Moscaz
+# @author Alessandro Mosca
 #
 
 #

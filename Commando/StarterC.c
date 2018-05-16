@@ -7,7 +7,6 @@
 #include "ProxyRemoteUI.h"
 #include "PostmanCommando.h"
 
-
 extern void start(void) {
     adminui_start();
     Pilot_start();

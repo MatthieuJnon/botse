@@ -1,3 +1,5 @@
+#include "prose.h"
+
 #ifndef PILOT_H
 #define PILOT_H
 
@@ -20,12 +22,14 @@ typedef struct Pilot_t Pilot;
 
 extern void Pilot_start(void);
 extern void Pilot_stop(void);
-extern MqMsg Pilot_mqReceive(void);
-extern int Pilot_setRobotVelocity(VelocityVector vel);
+//extern MqMsg Pilot_mqReceive(void);
+extern void Pilot_setRobotVelocity(VelocityVector vel);
 extern void Pilot_toggleEmergencyStop(void);
 extern void Pilot_check(void);
 extern void Pilot_new(void);
 extern void Pilot_free(void);
+extern PilotState Pilot_getState(void);
+extern VelocityVector Pilot_getVelocity(void);
 
 #endif
 
