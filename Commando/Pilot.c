@@ -13,7 +13,6 @@
 
 #include "Pilot.h"
 #include "Robot.h"
-#include "prose.h"
 
 /*
  * paramètres de configuration du pilote
@@ -81,11 +80,12 @@ typedef void (*ActionPtr)();
 // PROTOTYPES
 static void Pilot_mqSend (MqMsg aMsg);
 static void* Pilot_run();
-static void Pilot_sendMvt(VelocityVector vel);
+static void Pilot_sendMvt();
 static int evaluateVel(VelocityVector vel);
 static void Pilot_setTO(void);
 static void Pilot_resetTO(void);
 static void* Pilot_timeout(void);
+static MqMsg Pilot_mqReceive(void);
 
 // VARIABLES
 static Pilot myPilot;
@@ -128,7 +128,8 @@ extern void Pilot_stop()
 	Pilot_mqSend (msg);
 }
 
-extern MqMsg Pilot_mqReceive ()
+//extern MqMsg Pilot_mqReceive ()
+static MqMsg Pilot_mqReceive ()
 {
 	int check;
 	mqd_t mq;
@@ -136,8 +137,14 @@ extern MqMsg Pilot_mqReceive ()
 	mq = mq_open (NAME_MQ_BOX, O_RDONLY);
 
 	check = mq_receive (mq, msg.buffer, MQ_MSG_SIZE, 0);
+	if(check== -1){
+		//gestion d'erreur
+	}
 
 	check = mq_close (mq);
+	if(check== -1){
+		//gestion d'erreur
+	}
 
 	return msg.data;
 }
@@ -152,9 +159,23 @@ static void Pilot_mqSend (MqMsg aMsg)
 	mq = mq_open (NAME_MQ_BOX, O_WRONLY);
 
 	check = mq_send (mq, msg.buffer, sizeof (msg.buffer), 0);
+	if(check== -1){
+		//gestion d'erreur
+	}
 
 	check = mq_close (mq);
+	if(check== -1){
+		//gestion d'erreur
+	}
 
+}
+
+extern PilotState Pilot_getState(){
+	return myPilot.myPilotState;
+}
+
+extern VelocityVector Pilot_getVelocity(){
+	return myPilot.currentVel;
 }
 
 static int evaluateVel(VelocityVector vel)
@@ -193,7 +214,8 @@ extern void Pilot_toggleEmergencyStop()
 
 extern void Pilot_hasBumped()
 {
-	timeout_counter = Pilot_setTO();
+//	timeout_counter = Pilot_setTO();
+	Pilot_setTO();
 	if(Robot_hasBumped()){
 		MqMsg msg = {.event = E_BUMPED};
 		Pilot_mqSend (msg);
@@ -234,7 +256,7 @@ static void* Pilot_timeout()
 	while (myPilot.state != S_DEATH)
 	{
 		usleep(timeout_counter);
-		if(myPilot.myPilotState == S_TEST_BUMP || myPilot.myPilotState == S_RUNNING){
+		if(myPilot.state == S_TEST_BUMP || myPilot.state == S_RUNNING){
 			MqMsg msg = {.event = E_TO_BUMP};
 			Pilot_mqSend (msg);
 		}

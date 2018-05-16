@@ -1,9 +1,3 @@
-/*
- * AdminUI.c
- *
- *  Created on: 14 mai 2018
- *  Author: Pierre P
- */
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,7 +9,9 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-#include "AdminUI.h"
+#include "Keyboard.h"
+#include "Logger.h"
+#include "Adminui.h"
 
 // PARAMAMETRE MAE
 #define NAME_MQ_BOX  "/bal_RemoteUI"
@@ -50,7 +46,7 @@ static const char * Action_getName(int i)
 
 #define EVENT_GENERATION S(E_SET_DIR) S(E_SET_IP) S(E_REFRESH) S(E_CLEAR) S(E_ASK_LOG) S(E_RETURN) S(E_STOP)
 #define S(x) x,
-typedef enum {EVENT_GENERATION EVENT_NB}  Event;
+typedef enum {EVENT_GENERATION EVENT_NB}  MaeEvent;
 #undef S
 #define S(x) #x,
 const char * const EventName[] = { EVENT_GENERATION };
@@ -69,7 +65,7 @@ typedef struct
 
 typedef struct
 {
-	Event event;
+	MaeEvent event;
 } MqMsg;
 
 static State MyState;
@@ -98,14 +94,15 @@ typedef union
 static uint8_t myIp;
 static Direction myDir;
 static VelocityVector myVel;
-static Event myEvents[];
+static Event myEvents[LIMIT_EVENT];
 static int currentEventNumber;
 static int previousEventNumber;
 static int nbEvents;
 
 // PROTOTYPES
-static AdminUI_displayScreen(IdAdminScreen idAdminScreen);
-static AdminUI_displayEvents(Event event[]);
+static void AdminUI_displayScreen(IdAdminScreen idAdminScreen);
+static void AdminUI_displayEvents(Event event[]);
+static void AdminUI_mqSend (MqMsg aMsg);
 
 extern void AdminUI_start(void)
 {
@@ -176,7 +173,7 @@ extern void AdminUI_setEventCount(int indice)
 	nbEvents = indice;
 }
 
-static AdminUI_displayScreen(IdAdminScreen idAdminScreen)
+static void AdminUI_displayScreen(IdAdminScreen idAdminScreen)
 {
 	switch(idAdminScreen){
 		case SCREEN_MAIN:
@@ -193,7 +190,7 @@ static AdminUI_displayScreen(IdAdminScreen idAdminScreen)
 	}
 }
 
-static AdminUI_displayEvents(Event event[])
+static void AdminUI_displayEvents(Event event[])
 {
 
 }
@@ -212,8 +209,7 @@ MqMsg AdminUI_mqReceive ()
 	return msg.data;
 }
 
-static void AdminUI_mqSend (MqMsg aMsg)
-{
+static void AdminUI_mqSend (MqMsg aMsg){
 	int check;
 	MqMsgAdapter msg;
 	mqd_t mq;

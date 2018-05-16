@@ -1,3 +1,5 @@
+#include "prose.h"
+
 #ifndef POSTMAN_COMMANDO_H
 #define POSTMAN_COMMANDO_H
 
